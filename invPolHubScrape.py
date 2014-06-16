@@ -32,7 +32,7 @@ for i in links:
 
 # for i in range(0,len(subAddress)):
 
-i=0
+i=1
 
 webpage = urllib2.urlopen(subAddress[i])
 soup=bsoup(webpage.read())
@@ -42,19 +42,30 @@ sDirty=soup.findAll('td', {'data-position':'3'})
 rDirty=soup.findAll('td', {'data-position':'4'})
 tDirty=soup.findAll('td', {'data-position':'5'})
 
-# for j in range(0,len(partners)):
+j_partner=[]
+j_signDate=[]
+j_ratifDate=[]
+j_treaty=[]
 
-j=0
+for j in range(0,len(pDirty)):
 
-p=str(pDirty[j]	)
-pLink='/treaty/'+str(j+1)
-partner=p[p.find(pLink)+len(pLink)+2:p.find('</a></span></td>')]
+	p=str(pDirty[j]	)
+	partner=cntries[[i for i, x in enumerate(cntries) if x in p][0]]
+	j_partner.append(partner)
 
-si=str(sDirty[j])
-signDate=si[si.find('fo">')+4:si.find('</span></td>')]
+	si=str(sDirty[j])
+	signDate=si[si.find('fo">')+4:si.find('</span></td>')]
+	j_signDate.append(signDate)
 
-ri=str(rDirty[j])
-ratifDate=ri[ri.find('fo">')+4:ri.find('</span></td>')]
+	ri=str(rDirty[j])
+	ratifDate=ri[ri.find('fo">')+4:ri.find('</span></td>')]
+	j_ratifDate.append(ratifDate)
 
+	tr=str(tDirty[j])
+	if 'href' in tr:
+		treaty=tr[tr.find('ref="')+5:tr.find(' target="')]
+	else:
+		treaty='No treaty text'
+	j_treaty.append(treaty)
 
-
+# time.sleep(10)
