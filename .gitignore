@@ -1,0 +1,17 @@
+*.pdf
+*.csv
+*.DS_Store
+*.aux
+*.bbl
+*.blg
+*.cb
+*.cb2
+*.log
+*.dvi
+*.out
+*.tcp
+*.ps
+*.gz
+*.Rhistory
+*.DS_Store
+*.Rapp.history
