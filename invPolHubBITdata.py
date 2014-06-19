@@ -40,12 +40,6 @@ for sender in range(0,len(subAddress)):
 
 	except urllib2.HTTPError, e:
 		print '\n '+  cntries[sender] + ' link not working \n'	
-	
-	# except:
-	# 	print "UNCTAD is refusing us, give it a minute"; time.sleep(60)
-	# 	treatyData=treatyScrape(sender, subAddress, cntries, base, True, dwnldTexts)		
-	# 	bitData.append(treatyData[0]); dwnldTexts.append(treatyData[1])
-	# 	moveOn(sender, cntries, 5)
 
 # Write to csv
 keys=['sender','partner','signDate','ratifDate','status','termDate','termType','treatyLang']
