@@ -78,42 +78,36 @@ def treatyScrape(sender, subAddress, cntries, base, downloadTreaty, dwnldTexts):
 		# Find partner, sign/ratif date, and status of treaty
 		partner = re.sub('<[^>]+>', ' ', strSoup[0]).strip()
 		
-		if cntries[sender]=='Belgium' and partner=='BLEU (Belgium-Luxembourg Economic Union)':
-			treatyDict=treatyPgScrape(base, strSoup, partner, cntries, sender, 5)
+		signDate = cleanStrSoup(strSoup[2], 'fo">', '</span></td>')
+		ratifDate = cleanStrSoup(strSoup[3], 'fo">', '</span></td>')
+		status = cleanStrSoup(strSoup[1], 'fo">', '</span></td>')
 
-		else:
-			signDate = cleanStrSoup(strSoup[2], 'fo">', '</span></td>')
-			ratifDate = cleanStrSoup(strSoup[3], 'fo">', '</span></td>')
-			status = cleanStrSoup(strSoup[1], 'fo">', '</span></td>')
+		# If status is terminated find date and reason
+		termDate=''; termType=''
+		if status=='Terminated':
+			exTreatyInfo=treatyPgScrape(base, strSoup, partner, cntries, sender, 2)
+			termDate = exTreatyInfo['termDate']
+			termType = exTreatyInfo['termType']
 
-			# If status is terminated find date and reason
-			termDate=''; termType=''
-			if status=='Terminated':
-				treatyLink = base + cleanStrSoup(strSoup[0], 'ref="', '">'+partner)
-				treatySoup = openSoup(treatyLink)
-				stInfo = [str(tI) for tI in treatySoup.findAll('div', {'class':'form-data'})]
-				termDate = termInfo(stInfo, 'Date of termination')
-				termType = termInfo(stInfo, 'Type of termination')
+		# If there is a treaty text, find languages and download
+		treatyLang=[]
+		if 'Full text' in strSoup[4]:
+			text=strSoup[4].split(' | ')
+			for t in text:
+				tLang=cleanStrSoup(t, '"_blank">', '</a>')
+				treatyLang.append(tLang)
+				tLink=base+cleanStrSoup(t, 'ref="', '" target="')
+				tName=cntries[sender]+'_'+partner+'_'+signDate[len(signDate)-4:len(signDate)]+'_'+tLang
+				if downloadTreaty and tLink not in dwnldTexts:
+					downloadText(link=tLink, dir='TreatyTexts', filename=tName, sleep=5)
+				dwnldTexts.append(tLink)
+		treatyLang=', '.join(treatyLang)
 
-			# If there is a treaty text, find languages and download
-			treatyLang=[]
-			if 'Full text' in strSoup[4]:
-				text=strSoup[4].split(' | ')
-				for t in text:
-					tLang=cleanStrSoup(t, '"_blank">', '</a>')
-					treatyLang.append(tLang)
-					tLink=base+cleanStrSoup(t, 'ref="', '" target="')
-					tName=cntries[sender]+'_'+partner+'_'+signDate[len(signDate)-4:len(signDate)]+'_'+tLang
-					if downloadTreaty and tLink not in dwnldTexts:
-						downloadText(link=tLink, dir='TreatyTexts', filename=tName, sleep=5)
-					dwnldTexts.append(tLink)
-			treatyLang=', '.join(treatyLang)
-
-			# Story data for individual treaty in dictionary
-			treatyDict={ 'sender':cntries[sender],
-						'partner':partner, 'signDate':signDate, 'ratifDate':ratifDate,
-						'status':status, 'termDate':termDate, 'termType':termType,
-						'treatyLang':treatyLang }
+		# Story data for individual treaty in dictionary
+		treatyDict={ 'sender':cntries[sender],
+					'partner':partner, 'signDate':signDate, 'ratifDate':ratifDate,
+					'status':status, 'termDate':termDate, 'termType':termType,
+					'treatyLang':treatyLang }
 		
 		# Store all treaties for country in a list
 		treatyData.append(treatyDict)
@@ -126,10 +120,7 @@ def moveOn(sender, cntries, sleep):
 	time.sleep(sleep) # Be nice to UNCTAD servers
 
 def treatyPgScrape(base, strSoup, partner, cntries, sender, sleep):
-	""" Error in the partner entry on the Belgium page on inv policy hub. 
-	Error necessitates that I scrape the individual treaty pages. Base is
-	simply the base link, strSoup is the string version of the soup from
-	the Belgium page.   """
+	""" Scrapes individual treaty pages for details such as termination. """
 	treatyLink = base + cleanStrSoup(strSoup[0], 'ref="', '">'+partner)
 	treatySoup = openSoup(treatyLink)
 	stInfo = [str(tI) for tI in treatySoup.findAll('div', {'class':'form-data'})]
