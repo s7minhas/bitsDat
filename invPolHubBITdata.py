@@ -2,7 +2,11 @@
 import os
 
 # Choose directory
-os.chdir('/Users/janus829/Desktop/Research/BITsData')
+if os.environ.get('USER')=='janus829':
+	os.chdir('/Users/janus829/Research/BITsData')
+
+if os.environ.get('USER')=='s7m':
+	os.chdir('/Users/s7m/Research/BITsData')
 
 # My helper functions
 from invPolHubHelpers import *
@@ -43,7 +47,7 @@ for sender in range(0,len(subAddress)):
 
 # Write to csv
 keys=['sender','partner','signDate','ratifDate','status','termDate','termType','treatyLang']
-f=open('BITsData.csv', 'wb')
+f=open('BITsData2.csv', 'wb')
 writer=csv.DictWriter(f, keys )
 writer.writer.writerow( keys )
 writer.writerows( pullout(bitData)  )
