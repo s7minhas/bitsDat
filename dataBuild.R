@@ -1,5 +1,6 @@
 # Load workspace
-source('/Users/janus829/Desktop/Research/BITsData/setup.R')
+if(Sys.info()["user"]=="janus829" | Sys.info()["user"]=="s7m"){
+	source('~/Research/BITsData/setup.R') }
 
 # Replacing BLEU with Belgium (Belgium-Luxem sign BITs under BLEU)
 bit$partner=char(bit$partner)

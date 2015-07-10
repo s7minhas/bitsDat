@@ -1,5 +1,6 @@
 # Setup
-setwd('/Users/janus829/Desktop/Research/BITsData')
+if(Sys.info()["user"]=="janus829" | Sys.info()["user"]=="s7m"){
+	setwd('~/Research/BITsData') }
 load('panel.rda')
 bit=read.csv('BITsData.csv')
 
